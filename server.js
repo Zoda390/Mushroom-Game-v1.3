@@ -65,10 +65,10 @@ function newConnection(socket) {
         cs_map.tile_map[data.y][data.x][data.z].id = data.id;
         cs_map.tile_map[data.y][data.x][data.z].inv[0] = new ServerItem(2, 5, 1, '');
         cs_map.tile_map[data.y][data.x][data.z].inv[1] = new ServerItem(1, 4, 10, '');
-        socket.emit('change', {x: data.x, y: data.y, z: data.z, to: cs_map.tile_map[data.y][data.x][data.z].toStr()});
+        io.emit('change', {x: data.x, y: data.y, z: data.z, to: cs_map.tile_map[data.y][data.x][data.z].toStr()});
         player_count++;
         chat_arr.push({team: 0, txt: data.username + ' has joined'});
-        socket.emit('msg', {team: -1, txt: data.username + ' has joined'});
+        io.emit('msg', {team: -1, txt: data.username + ' has joined'});
     })
 
     socket.on('change', data => { //change a block data = {x:int, y:int, z:int, to:str}
@@ -135,25 +135,37 @@ function newConnection(socket) {
         }
 
         //send the change out to all clients
-        socket.emit('change', {x: data.x, y: data.y, z: data.z, to: data.to});
+        io.emit('change', {x: data.x, y: data.y, z: data.z, to: data.to});
     })
 
     socket.on('hurt', data => {
         if(cs_map.tile_map[data.y][data.x][data.z] != 0){
             cs_map.tile_map[data.y][data.x][data.z].hp -= data.hit;
             if(cs_map.tile_map[data.y][data.x][data.z].hp>0){
-                socket.emit('hurt', {x: data.x, y: data.y, z: data.z, hit: data.hit});
+                io.emit('hurt', {x: data.x, y: data.y, z: data.z, hit: data.hit});
             }
             else{
                 if(cs_map.tile_map[data.y][data.x][data.z].id != undefined){
-                    cs_map.tile_map[0][0][5] = new ServerTileEntity(3, 4, 100, cs_map.tile_map[data.y][data.x][data.z].team, 0);
-                    cs_map.tile_map[0][0][5].id = cs_map.tile_map[data.y][data.x][data.z].id;
-                    socket.emit('change', {x: 0, y: 0, z: 5, to: cs_map.tile_map[0][0][5].toStr()});
-                    socket.emit('reset_view', {x: 0, y: 0, z: 5, id: cs_map.tile_map[data.y][data.x][data.z].id});
+                    let y = between(0, cs_map.tile_map.length-1);
+                    let x = between(0, cs_map.tile_map[y].length-1);
+                    let z = 5;
+                    if(cs_map.tile_map[y][x][z] !== 0){
+                        for(let i = cs_map.tile_map[y][x].length; i>z; i--){
+                            if(cs_map.tile_map[y][x][z] === 0){
+                                z = i;
+                            }
+                        }
+                    }
+                    cs_map.tile_map[y][x][z] = new ServerTileEntity(3, 4, 100, cs_map.tile_map[data.y][data.x][data.z].team, 0);
+                    cs_map.tile_map[y][x][z].id = cs_map.tile_map[data.y][data.x][data.z].id;
+                    cs_map.tile_map[y][x][z].inv[0] = new ServerItem(2, 5, 1, '');
+                    cs_map.tile_map[y][x][z].inv[1] = new ServerItem(1, 4, 10, '');
+                    io.emit('change', {x: x, y: y, z: z, to: cs_map.tile_map[y][x][z].toStr()});
+                    io.emit('reset_view', {x: x, y: y, z: z, id: cs_map.tile_map[data.y][data.x][data.z].id});
                 }
-                socket.emit('add_item', {id: data.id, item: cs_map.tile_map[data.y][data.x][data.z].drop_item});
+                io.emit('add_item', {id: data.id, item: cs_map.tile_map[data.y][data.x][data.z].drop_item});
                 cs_map.tile_map[data.y][data.x][data.z] = 0;
-                socket.emit('change', {x: data.x, y: data.y, z: data.z, to: 0});
+                io.emit('change', {x: data.x, y: data.y, z: data.z, to: 0});
             }
         }
     })
@@ -177,11 +189,17 @@ function newConnection(socket) {
         if(heal > 0){
             //console.log('healed ' + heal + ' tiles');
         }
-        socket.emit('regen', {});
+        io.emit('regen', {});
     }
 
     socket.on('msg', data => {
         chat_arr.push(data);
-        socket.emit('msg', data);
+        io.emit('msg', data);
     })
+}
+
+function between(min, max) {
+    return Math.floor(
+        Math.random() * (max - min) + min
+    )
 }

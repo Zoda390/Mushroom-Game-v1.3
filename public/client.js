@@ -171,6 +171,9 @@ function setup(){
                     if(cc_map.tile_map[y][x][z] != 0){
                         if(cc_map.tile_map[y][x][z].hp < 10){
                             cc_map.tile_map[y][x][z].hp += 1;
+                            if(cc_map.tile_map[y][x][z].id == socket.id){
+                                player.hp += 1;
+                            }
                             heal++;
                         }
                     }
@@ -243,6 +246,10 @@ function draw(){
             cc_map.render();
             r_all_ui(ui_arr);
             takeInput();
+            if(cc_map.tile_map[player.y][player.x][player.z].hp < -2){
+                cc_map.tile_map[player.y][player.x][player.z].hp = 1;
+                player.hp = 1;
+            }
         }
     }
 }
