@@ -1,0 +1,50 @@
+[
+  {
+    "type": "solid",
+    "name": "stone",
+    "img_num": 1,
+    "z_offset": 0
+  },
+  {
+    "type": "solid",
+    "name": "grass",
+    "img_num": 2,
+    "z_offset": 0
+  },
+  {
+    "type": "liquid",
+    "name": "water",
+    "img_num": 3,
+    "z_offset": 0
+  },
+  {
+    "type": "entity",
+    "name": "player",
+    "img_num": 4,
+    "z_offset": 0
+  },
+  {
+    "type": "solid",
+    "name": "wood",
+    "img_num": 5,
+    "z_offset": 0
+  },
+  {
+    "type": "facing",
+    "name": "log",
+    "img_num": 6,
+    "z_offset": 0
+  },
+  {
+    "type": "solid",
+    "name": "crystal base",
+    "img_num": 7,
+    "z_offset": 0
+  },
+  {
+    "type": "solid",
+    "name": "minion log",
+    "img_num": 8,
+    "z_offset": 0
+  }
+]

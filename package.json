@@ -1,0 +1,25 @@
+{
+  "name": "mushroom-game-v1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zoda390/Mushroom-Game-v1.git"
+  },
+  "author": "Zoda390",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Zoda390/Mushroom-Game-v1/issues"
+  },
+  "homepage": "https://github.com/Zoda390/Mushroom-Game-v1#readme",
+  "dependencies": {
+    "@geckos.io/client": "^2.2.3",
+    "@geckos.io/server": "^2.2.3",
+    "express": "^4.18.2"
+  }
+}

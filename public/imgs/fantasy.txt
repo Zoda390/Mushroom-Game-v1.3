@@ -1,0 +1,37 @@
+;paint.net Palette File
+;Downloaded from Lospec.com/palette-list
+;Palette Name: fantasy_
+;Description: designed for the fantasy_ tilesets and sprites @itch.io [https://itch.io/c/1507436/fantasy-]
+;Colors: 32
+FFede4da
+FFbfb8b4
+FF918d8d
+FF636167
+FF353540
+FFa94949
+FFca5954
+FFe56f4b
+FFe39347
+FFeeb551
+FFe8c65b
+FFbda351
+FF8b9150
+FF557d55
+FF446350
+FF3e554c
+FF8bb0ad
+FF769fa6
+FF668da9
+FF5c699f
+FF5a5888
+FF7c6da2
+FF947a9d
+FFbc87a5
+FFd9a6a6
+FFd4c2b6
+FFbdaa97
+FF86735b
+FF7e674c
+FF735b42
+FF604b3d
+FF4d3f38
