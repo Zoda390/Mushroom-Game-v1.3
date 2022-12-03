@@ -1,4 +1,5 @@
-import geckos from '@geckos.io/server'
+//import geckos from '@geckos.io/server'
+import {Server} from 'socket.io'
 import express from 'express'
 import fs from 'fs'
 import {find_in_array, ServerTile, ServerMap, ServerTileEntity, ServerItem} from './server-classes.js'
@@ -7,9 +8,15 @@ import {find_in_array, ServerTile, ServerMap, ServerTileEntity, ServerItem} from
 const port = 3000;
 const app = express()
 const server = app.listen(port)
-const io = geckos()
+//const io = geckos()
+var io = new Server(server, {
+    cors: {
+        origin: "*"
+    }
+})
+io.sockets.on('connection', newConnection)
 
-io.addServer(server)
+//io.addServer(server)
 
 app.use(express.static("public"));
 console.log("My server is running on port " + port);
@@ -44,30 +51,27 @@ cs_map.save();
 
 var player_count = 0;
 var chat_arr = [];
-//dealing with messages that the server gets
-io.onConnection(channel => {
-    channel.onDisconnect(() => { //client disconnect message
-        //console.log(`${channel.id} got disconnected`);
-    })
+
+function newConnection(socket) {
     
-    channel.on('join', data => { //client join message
+    socket.on('join', data => { //client join message
         //convert the map to a string and send it to the player
-        io.room(channel.roomId).emit('give_world', {str: cs_map.totxt(), name: cs_map.name});
+        socket.emit('give_world', {str: cs_map.totxt(), name: cs_map.name});
     })
 
-    channel.on('start', data => {
+    socket.on('start', data => {
         //add a player to the map
         cs_map.tile_map[data.y][data.x][data.z] = new ServerTileEntity(find_in_array("entity", tile_type_map), find_in_array("player", tile_name_map), 100, (player_count%2), 0);
         cs_map.tile_map[data.y][data.x][data.z].id = data.id;
         cs_map.tile_map[data.y][data.x][data.z].inv[0] = new ServerItem(2, 5, 1, '');
         cs_map.tile_map[data.y][data.x][data.z].inv[1] = new ServerItem(1, 4, 10, '');
-        io.room(channel.roomId).emit('change', {x: data.x, y: data.y, z: data.z, to: cs_map.tile_map[data.y][data.x][data.z].toStr()});
+        socket.emit('change', {x: data.x, y: data.y, z: data.z, to: cs_map.tile_map[data.y][data.x][data.z].toStr()});
         player_count++;
         chat_arr.push({team: 0, txt: data.username + ' has joined'});
-        io.room(channel.roomId).emit('msg', {team: -1, txt: data.username + ' has joined'});
+        socket.emit('msg', {team: -1, txt: data.username + ' has joined'});
     })
 
-    channel.on('change', data => { //change a block data = {x:int, y:int, z:int, to:str}
+    socket.on('change', data => { //change a block data = {x:int, y:int, z:int, to:str}
         if(data.to != 0){
             //parse the str from data.to
             let tempArr = data.to.split('.');
@@ -131,30 +135,30 @@ io.onConnection(channel => {
         }
 
         //send the change out to all clients
-        io.room(channel.roomId).emit('change', {x: data.x, y: data.y, z: data.z, to: data.to});
+        socket.emit('change', {x: data.x, y: data.y, z: data.z, to: data.to});
     })
 
-    channel.on('hurt', data => {
+    socket.on('hurt', data => {
         if(cs_map.tile_map[data.y][data.x][data.z] != 0){
             cs_map.tile_map[data.y][data.x][data.z].hp -= data.hit;
             if(cs_map.tile_map[data.y][data.x][data.z].hp>0){
-                io.room(channel.roomId).emit('hurt', {x: data.x, y: data.y, z: data.z, hit: data.hit});
+                socket.emit('hurt', {x: data.x, y: data.y, z: data.z, hit: data.hit});
             }
             else{
                 if(cs_map.tile_map[data.y][data.x][data.z].id != undefined){
                     cs_map.tile_map[0][0][5] = new ServerTileEntity(3, 4, 100, cs_map.tile_map[data.y][data.x][data.z].team, 0);
                     cs_map.tile_map[0][0][5].id = cs_map.tile_map[data.y][data.x][data.z].id;
-                    io.room(channel.roomId).emit('change', {x: 0, y: 0, z: 5, to: cs_map.tile_map[0][0][5].toStr()});
-                    io.room(channel.roomId).emit('reset_view', {x: 0, y: 0, z: 5, id: cs_map.tile_map[data.y][data.x][data.z].id});
+                    socket.emit('change', {x: 0, y: 0, z: 5, to: cs_map.tile_map[0][0][5].toStr()});
+                    socket.emit('reset_view', {x: 0, y: 0, z: 5, id: cs_map.tile_map[data.y][data.x][data.z].id});
                 }
-                io.room(channel.roomId).emit('add_item', {id: data.id, item: cs_map.tile_map[data.y][data.x][data.z].drop_item});
+                socket.emit('add_item', {id: data.id, item: cs_map.tile_map[data.y][data.x][data.z].drop_item});
                 cs_map.tile_map[data.y][data.x][data.z] = 0;
-                io.room(channel.roomId).emit('change', {x: data.x, y: data.y, z: data.z, to: 0});
+                socket.emit('change', {x: data.x, y: data.y, z: data.z, to: 0});
             }
         }
     })
 
-    setInterval(tile_regen, 7000);
+    setInterval(tile_regen, 10000);
 
     function tile_regen(){
         let heal = 0;
@@ -173,11 +177,11 @@ io.onConnection(channel => {
         if(heal > 0){
             //console.log('healed ' + heal + ' tiles');
         }
-        io.room(channel.roomId).emit('regen', {});
+        socket.emit('regen', {});
     }
 
-    channel.on('msg', data => {
+    socket.on('msg', data => {
         chat_arr.push(data);
-        io.room(channel.roomId).emit('msg', data);
+        socket.emit('msg', data);
     })
-})
+}

@@ -135,7 +135,7 @@ class ClientTileEntity extends ClientTileFacing{ //an entity tile
 
     move(d, id){ //move the entity by sending 2 change messages
         if ((this.move_counter >= ((keyIsDown(run_button))? this.run_wait:this.walk_wait)) && id == this.id) {
-            channel.emit('change', {x: this.pos.x, y: this.pos.y, z: this.pos.z, to: 0});
+            socket.emit('change', {x: this.pos.x, y: this.pos.y, z: this.pos.z, to: 0});
             if(d == 0){
                 this.facing = 0;
                 this.pos.y ++;
@@ -165,7 +165,7 @@ class ClientTileEntity extends ClientTileFacing{ //an entity tile
                 player.z --;
             }
             this.move_counter = 0;
-            channel.emit('change', {x: this.pos.x, y: this.pos.y, z: this.pos.z, to: this.toStr()});
+            socket.emit('change', {x: this.pos.x, y: this.pos.y, z: this.pos.z, to: this.toStr()});
         }
     }
 

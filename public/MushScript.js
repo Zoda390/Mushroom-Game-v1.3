@@ -294,7 +294,7 @@ function place(params){
     }
     
     if(cc_map.tile_map[y][x][z] === 0){
-      channel.emit('change', {x: x, y: y, z: z, to: ("1."+tileID+".10")});
+      socket.emit('change', {x: x, y: y, z: z, to: ("1."+tileID+".10")});
       if(mode == "s"){
         return 'placed'; //this is so the item that calls this knows to take away 1 from amount
       }
@@ -327,7 +327,7 @@ function hurt(params){
   }
 
   if(cc_map.tile_map[y][x][z] !== undefined){
-    channel.emit('hurt', {x: x, y: y, z: z, hit: hit, id: channel.id});
+    socket.emit('hurt', {x: x, y: y, z: z, hit: hit, id: socket.id});
   }
 }
 

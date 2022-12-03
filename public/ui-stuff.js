@@ -209,7 +209,7 @@ function update_chat_input_txt(){
 
 function send_chat_msg(){
     if(chat_in_txt.length > 0){
-        channel.emit('msg', {team: cc_map.tile_map[player.y][player.x][player.z].team, txt: (username + ': ' + chat_in_txt)})
+        socket.emit('msg', {team: cc_map.tile_map[player.y][player.x][player.z].team, txt: (username + ': ' + chat_in_txt)})
         chat_in_txt = "";
         chat_input.value('');
     }
@@ -295,7 +295,7 @@ function s_main_menu_ui(){
     mm_name_input.html.input(update_name_input);
     mm_start_button.html.mousePressed(()=>{
         if(username.length >= 1){
-            channel.emit('start', {x: player.x, y: player.y, z: player.z, id: channel.id, username: username});
+            socket.emit('start', {x: player.x, y: player.y, z: player.z, id: socket.id, username: username});
             gameState = "game";
             lastbuildMilli = millis();
             musicplayer.play();
@@ -497,7 +497,7 @@ function s_pause_ui(){
     pause_quit_button.html.style('background-color', '#ffffff00');
     pause_quit_button.html.mousePressed(()=>{
         gameState = "Main_Menu";
-        channel.emit('change', {x: player.x, y: player.y, z: player.z, to: 0});
+        socket.emit('change', {x: player.x, y: player.y, z: player.z, to: 0});
         player.y = floor(random(0, cc_map.tile_map.length-1));
         player.x = floor(random(0, cc_map.tile_map[player.y].length-1));
         player.z = 5;
