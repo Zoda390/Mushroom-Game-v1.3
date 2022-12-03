@@ -326,7 +326,7 @@ function hurt(params){
     }
   }
 
-  if(cc_map.tile_map[y][x][z] !== undefined){
+  if(cc_map.tile_map[y] !== undefined && cc_map.tile_map[y][x] !== undefined && cc_map.tile_map[y][x][z] !== undefined){
     socket.emit('hurt', {x: x, y: y, z: z, hit: hit, id: socket.id});
   }
 }

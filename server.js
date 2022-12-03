@@ -45,7 +45,7 @@ item_name_map = [0, 'stone', 'grass', 'water', 'wood', 'pickaxe'];
 
 //create the curent server map
 var cs_map = new ServerMap('unUpdated', 0, 0); //curent server map
-cs_map.fromtxt("map.txt");
+//cs_map.fromtxt("map.txt");
 cs_map.save();
 
 

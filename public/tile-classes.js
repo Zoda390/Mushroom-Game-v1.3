@@ -48,7 +48,6 @@ class ClientTileLiquid extends ClientTile{ //an liquid tile
     }
 
     render(){
-        console.log('water');
         image(tile_img_map[3][0], (this.pos.x*tileSize), (this.pos.y*tileSize) - (this.pos.z * tileSize/2), tileSize, tileSize + (tileSize/2));
         if(this.hp < 10){
             push();
